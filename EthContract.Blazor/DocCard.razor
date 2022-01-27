@@ -1,0 +1,42 @@
+﻿@using EthContract;
+@using EthContract.ContractDefinition
+@using System.Numerics
+
+@inject IDocService _docService;
+
+<div class="container">
+    @if (_hasLoaded)
+    {
+        <div class="card m-1">
+            <div class="card-body">      
+                <p>@docData.Name</p>
+                <p>@docData.Type</p>
+                <p>@docData.EventOrganizer</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>
+            Loading...
+        </p>
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public BigInteger Id { get; set; }
+
+    private bool _hasLoaded = false;
+    private DocumentData docData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await _docService.DocumentsQueryAsync(Id);
+
+        docData = result.Data;
+
+        _hasLoaded = true;
+    }
+}

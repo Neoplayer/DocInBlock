@@ -1,0 +1,43 @@
+﻿@using EthContract;
+@using System.Numerics
+
+@inject IDocService _docService;
+
+<div class="container">
+    <div class="row">
+        <h2>
+            Query
+        </h2>
+    </div>
+    @if (_hasLoaded)
+    {
+        <div class="card">
+            @foreach (var doc in docsResult)
+            {
+                <DocCard Id="@doc"/>
+            }
+        </div>
+    }
+    else
+    {
+        <p>
+            Loading...
+        </p>
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public string Address { get; set; }
+
+    private bool _hasLoaded = false;
+    private List<BigInteger> docsResult;
+
+    protected override async Task OnInitializedAsync()
+    {
+        docsResult = await _docService.GetUserDocsQueryAsync(Address);
+        
+        _hasLoaded = true;
+    }
+}
