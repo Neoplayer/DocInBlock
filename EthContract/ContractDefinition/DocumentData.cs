@@ -37,5 +37,19 @@ namespace EthContract.ContractDefinition
         public virtual string EventOrganizer { get; set; }
         [Parameter("string", "Notes", 11)]
         public virtual string Notes { get; set; }
+
+
+        public DateTime?[] RangePicker 
+        {
+            get
+            {
+                return new DateTime?[] { new DateTime((long)DateStart), new DateTime((long)DateEnd) };
+            }
+            set
+            {
+                DateStart = value[0].Value.Ticks;
+                DateEnd = value[1].Value.Ticks;
+            } 
+        }
     }
 }

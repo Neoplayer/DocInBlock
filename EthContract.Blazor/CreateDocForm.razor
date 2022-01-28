@@ -1,0 +1,123 @@
+﻿@using System.Numerics
+@using System.Text.Json;
+@using Microsoft.AspNetCore.Components.Forms
+
+@inject IDocService _docService;
+
+<div class="container">
+    <div class="row">
+        <h2>
+            Create Document
+        </h2>
+    </div>
+    @if (_hasLoaded)
+    {
+        <Form Model="@document"
+              LabelColSpan="8"
+              WrapperColSpan="16"
+              OnFinish="OnFinish"
+              OnFinishFailed="OnFinishFailed">
+
+            <FormItem Label="Название программы">
+                <Input @bind-Value="@context.Name" />
+            </FormItem>
+
+            <FormItem Label="Тип мероприятия">
+                <RadioGroup @bind-Value="@context.Type">
+                    <Radio RadioButton Value="@("Lesson")">Lesson</Radio>
+                    <Radio RadioButton Value="@("Trenning")">Trenning</Radio>
+                    <Radio RadioButton Value="@("ProfessionalDevelopment")">Professional development</Radio>
+                </RadioGroup>
+            </FormItem>
+
+            <FormItem Label="Формат программы">
+                <RadioGroup @bind-Value="@context.Format">
+                    <Radio RadioButton Value="@("Online")">Online</Radio>
+                    <Radio RadioButton Value="@("Offline")">Offline</Radio>
+                    <Radio RadioButton Value="@("Mixed")">Mixed</Radio>
+                </RadioGroup>
+            </FormItem>
+
+            <FormItem Label="Место проведения">
+                <Cascader @bind-Value="@context.City" Options="districts" />
+            </FormItem>
+
+            <FormItem Label="RangePicker">
+                <RangePicker @bind-Value="@context.RangePicker" />
+            </FormItem>
+
+            <FormItem Label="Количество дней">
+                <AntDesign.InputNumber @bind-Value="@context.Days" />
+            </FormItem>
+
+            <FormItem Label="Количество часов">
+                <AntDesign.InputNumber @bind-Value="@context.Hours" />
+            </FormItem>
+
+            <FormItem Label="Организатор программы">
+                <Input @bind-Value="@context.EventOrganizer" />
+            </FormItem>
+
+            <FormItem Label="Примечания">
+                <TextArea @bind-Value="@context.Notes" />
+            </FormItem>
+
+            <FormItem WrapperColOffset="8" WrapperColSpan="16">
+                <Button HtmlType="submit">
+                    Submit
+                </Button>
+            </FormItem>
+        </Form>
+    }
+    else
+    {
+        <Spin />
+    }
+</div>
+
+
+@code {
+    private bool _hasLoaded = false;
+    private DocumentData document;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //docsResult = await _docService.GetUserDocsQueryAsync(Address);
+        
+        _hasLoaded = true;
+    }
+
+    private void OnFinish(EditContext editContext)
+    {
+        Console.WriteLine($"Success:{JsonSerializer.Serialize(document)}");
+    }
+
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(document)}");
+    }
+
+    private List<CascaderNode> districts = new List<CascaderNode>
+    {
+        new CascaderNode()
+        {
+            Value = "1",
+            Label = "Россия",
+            Children = new []
+            {
+                new CascaderNode {Value = "11", Label = "Санкт-Петербург"},
+                new CascaderNode {Value = "12", Label = "Москва"},
+                new CascaderNode {Value = "12", Label = "Новосибирск"},
+            }
+        },
+        new CascaderNode()
+        {
+            Value = "2",
+            Label = "Белорусь",
+            Children = new []
+            {
+                new CascaderNode {Value = "21", Label = "Минск"},
+            }
+        }
+    };
+}

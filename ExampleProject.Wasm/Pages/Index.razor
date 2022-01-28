@@ -11,45 +11,16 @@
 
 @if (EthereumAvailable == true && !string.IsNullOrEmpty(SelectedAccount))
 {
-@*    <div class="card m-1">
-        <div class="card-body">
-            <div class="row">
-                <label class="col-sm-3 col-form-label-lg">Selected Account:</label>
-                <div class="col-sm-6">
-                    @SelectedAccount
-                    <small id="selectedAccountHelp" class="form-text text-muted">The selected account is bound to the host (ie Metamask) on change</small>
-                </div>
-            </div>
-        </div>
-    </div>
+    <Row>
+        <GridCol Span="12">
+            <DocsList Address="@SelectedAccount"/>
+        </GridCol>
+        <GridCol Span="12">
+            <CreateDocForm />
+        </GridCol>
+    </Row>
 
-    <div class="card m-1">
-        <div class="card-body">
-            <div class="row">
-                <label class="col-sm-3 col-form-label-lg">Block hash of block number 0:</label>
-                <div class="col-sm-6">
-                    <button @onclick="@GetBlockHashAsync">Get BlockHash</button>
-                    <div>@BlockHash</div>
-                    <small id="selectedAccountHelp" class="form-text text-muted">With Metamask calls are redirected to its configured node (i.e http://localhost:8545)</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card m-1">
-        <div class="card-body">
-            <div class="row">
-                <label class="col-sm-3 col-form-label-lg">Authentication by signing:</label>
-                <div class="col-sm-6">
-                    <button @onclick="@AuthenticateAsync">Authenticate</button>
-                    <div>@AuthenticatedAccount</div>
-                    <small id="selectedAccountHelp" class="form-text text-muted">Creating an unique challenge per authentication request, allows us to recover and validate what account has signed the message</small>
-                </div>
-            </div>
-        </div>
-    </div>*@
-
-    <div class="card m-1">
+@*    <div class="card m-1 collapsed">
         <div class="card-body">
             <div class="row">
                 <label class="col-sm-3 col-form-label-lg">Create Document Test:</label>
@@ -59,55 +30,7 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="card m-1">
-        <div class="card-body">
-            <div class="row">
-                <DocsList Address="@SelectedAccount"/>
-            </div>
-        </div>
-    </div>
-
-    <div class="card m-1">
-        <div class="card-body">
-            <div class="row">
-                    <EditForm Model="@Data" OnValidSubmit="@HandleValidSubmit">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary />
-
-                        
-                        <label class="col-sm-3 col-form-label-lg">Name:</label>
-                        <InputText id="Name" @bind-Value="Data.Name" />
-
-                        <label class="col-sm-3 col-form-label-lg">Format:</label>
-                        <InputText id="Format" @bind-Value="Data.Format" />
-
-                        <label class="col-sm-3 col-form-label-lg">Type :</label>
-                        <InputText id="Type" @bind-Value="Data.Type" />
-
-                        <label class="col-sm-3 col-form-label-lg">EventOrganizer :</label>
-                        <InputText id="EventOrganizer" @bind-Value="Data.EventOrganizer" />
-
-                        <label class="col-sm-3 col-form-label-lg">City :</label>
-                        <InputText id="City" @bind-Value="Data.City" />
-
-                        <label class="col-sm-3 col-form-label-lg">Country:</label>
-                        <InputText id="Country" @bind-Value="Data.Country" />
-
-                        <label class="col-sm-3 col-form-label-lg">Notes:</label>
-                        <InputText id="Notes" @bind-Value="Data.Notes" />
-
-                        <button type="submit">Submit</button>
-                    </EditForm>
-            </div>
-        </div>
-    </div>
-
-
-
-
-@*    <Erc20Transfer></Erc20Transfer>*@
+    </div>*@
 }
 else
 {

@@ -1,25 +1,20 @@
-﻿@using EthContract;
-@using EthContract.ContractDefinition
-@using System.Numerics
+﻿@using System.Numerics
 
 @inject IDocService _docService;
 
 <div class="container">
     @if (_hasLoaded)
     {
-        <div class="card m-1">
-            <div class="card-body">      
-                <p>@docData.Name</p>
-                <p>@docData.Type</p>
-                <p>@docData.EventOrganizer</p>
-            </div>
-        </div>
+        <Card Bordered="true" Title=@docData.Name Style="width: 300px"> 
+            <Body>
+                <p>Event Organizer: @docData.EventOrganizer</p>
+                <p>Type: @docData.Type</p>
+            </Body>
+        </Card>
     }
     else
     {
-        <p>
-            Loading...
-        </p>
+        <Spin />
     }
 </div>
 
