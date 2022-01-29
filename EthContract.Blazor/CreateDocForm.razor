@@ -9,7 +9,7 @@
 <div class="container">
     <div class="row">
         <h2>
-            Create Document
+            Создать документ
         </h2>
     </div>
     @if (_hasLoaded)
@@ -49,11 +49,11 @@
             </FormItem>
 
             <FormItem Label="Количество дней">
-                <AntDesign.InputNumber @bind-Value="@context.DaysInt" Min="0" Max="200"/>
+                <AntDesign.InputNumber @bind-Value="@context.Days" Min="0" Max="200"/>
             </FormItem>
 
             <FormItem Label="Количество часов">
-                <AntDesign.InputNumber @bind-Value="@context.HoursInt" Min="0" Max="200"/>
+                <AntDesign.InputNumber @bind-Value="@context.Hours" Min="0" Max="200"/>
             </FormItem>
 
             <FormItem Label="Организатор программы">

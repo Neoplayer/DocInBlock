@@ -39,6 +39,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         _ethereumHostProvider.SelectedAccountChanged += HostProvider_SelectedAccountChanged;
+        _ethereumHostProvider.SelectedAccountChanged += async (s) => await DocumentsManager.UpdateCollection();
         EthereumAvailable = await _ethereumHostProvider.CheckProviderAvailabilityAsync();
     }
 

@@ -19,6 +19,8 @@ namespace EthContract
         Task<GetAgentsOutputDTO> GetAgentsQueryAsync(GetAgentsFunction getAgentsFunction, BlockParameter blockParameter = null);
         Task<List<BigInteger>> GetUserDocsQueryAsync(GetUserDocsFunction getUserDocsFunction, BlockParameter blockParameter = null);
         Task<List<BigInteger>> GetUserDocsQueryAsync(string userAddress, BlockParameter blockParameter = null);
+        Task<GetUserDocsToSignOutputDTO> GetUserDocsToSignQueryAsync(GetUserDocsToSignFunction getUserDocsToSignFunction, BlockParameter blockParameter = null);
+        Task<GetUserDocsToSignOutputDTO> GetUserDocsToSignQueryAsync(string userAddress, BlockParameter blockParameter = null);
         Task<TransactionReceipt> RejectRequestAndWaitForReceiptAsync(BigInteger document, CancellationTokenSource cancellationToken = null);
         Task<TransactionReceipt> RejectRequestAndWaitForReceiptAsync(RejectFunction rejectFunction, CancellationTokenSource cancellationToken = null);
         Task<string> RejectRequestAsync(BigInteger document);

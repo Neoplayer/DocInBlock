@@ -10,9 +10,11 @@ namespace EthContract.Blazor
     {
         public static event Action OnNewDoc;
 
-        public static void UpdateCollection()
+        public static Task UpdateCollection()
         {
             OnNewDoc?.Invoke();
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -10,7 +10,7 @@ using Nethereum.Contracts.CQS;
 using Nethereum.Contracts;
 using System.Threading;
 
-namespace Sample.Ethereum.Doc.ContractDefinition
+namespace EthContract.ContractDefinition
 {
 
 

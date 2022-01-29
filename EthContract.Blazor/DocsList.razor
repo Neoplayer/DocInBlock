@@ -8,25 +8,16 @@
 <div class="container">
     <div class="row">
         <h2>
-            User Documents
+            Документы пользователя
         </h2>
     </div>
     @if (_hasLoaded)
     {
         <AntList Grid="grid" DataSource="@docsResult">
             <ListItem >
-                <DocCard Id="@context"/>
+                <DocCard Id="@context" IsIdle="@idleDocs.Contains(context)"/>
             </ListItem>
         </AntList>
-@*        <div class="card" style="padding: 15px">
-            <Space Direction="DirectionVHType.Vertical">
-            @foreach (var doc in docsResult)
-            {
-                <SpaceItem>
-                </SpaceItem>
-            }
-            </Space>
-        </div>*@
     }
     else
     {
@@ -41,6 +32,7 @@
 
     private bool _hasLoaded = false;
     private List<BigInteger> docsResult = new List<BigInteger>();
+    private List<BigInteger> idleDocs = new List<BigInteger>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,6 +40,10 @@
 
         DocumentsManager.OnNewDoc += async () =>
         {
+            docsResult = new List<BigInteger>(); // To avoid bug
+            idleDocs = new List<BigInteger>();
+            StateHasChanged();
+
             await UpdateDocumentsList();
             StateHasChanged();
         };
@@ -58,6 +54,8 @@
         _hasLoaded = false;
 
         docsResult = await _docService.GetUserDocsQueryAsync(Address);
+        var idleDocsRes = await _docService.GetUserDocsToSignQueryAsync(Address);
+        idleDocs = idleDocsRes.Documents.Take((int)idleDocsRes.Counter).ToList();
 
         _hasLoaded = true;
     }

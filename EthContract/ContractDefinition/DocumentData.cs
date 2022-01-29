@@ -37,11 +37,11 @@ namespace EthContract.ContractDefinition
         [Parameter("uint256", "DateEnd", 7)]
         public virtual BigInteger DateEnd { get; set; } = DateTime.Now.AddDays(10).Ticks;
 
-        [Parameter("int16", "Days", 8)]
-        public virtual short Days { get; set; }
+        [Parameter("int32", "Days", 8)]
+        public virtual int Days { get; set; }
 
-        [Parameter("int16", "Hours", 9)]
-        public virtual short Hours { get; set; }
+        [Parameter("int32", "Hours", 9)]
+        public virtual int Hours { get; set; }
 
         [Required]
         [Parameter("string", "EventOrganizer", 10)]
@@ -80,17 +80,6 @@ namespace EthContract.ContractDefinition
                 DateStart = value[0].Value.Ticks;
                 DateEnd = value[1].Value.Ticks;
             }
-        }
-
-        public int DaysInt
-        {
-            get => Days;
-            set => Days = (short)value;
-        }
-        public int HoursInt
-        {
-            get => Hours;
-            set => Hours = (short)value;
         }
     }
 }

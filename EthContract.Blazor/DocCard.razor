@@ -11,9 +11,13 @@
     {
         <Card Bordered="true" Title=@docData.Name Style="width: 300px"> 
             <Body>
-                <p>Event Organizer: @docData.EventOrganizer</p>
-                <p>Type: @docData.Type</p>
-                <Button Type="@ButtonType.Link" OnClick="(e)=>open(e)">Open Details</Button>
+                @if(IsIdle)
+                {
+                    <Tag Color="processing">Idle</Tag>
+                }
+                <p>Организатор: @docData.EventOrganizer</p>
+                <p>Тип: @docData.Type</p>
+                <Button Type="@ButtonType.Link" OnClick="(e)=>open(e)">Детали</Button>
             </Body>
         </Card>
 
@@ -87,7 +91,8 @@
 @code {
     [Parameter]
     public BigInteger Id { get; set; }
-
+    [Parameter]
+    public bool IsIdle { get; set; }
 
     bool drawerVisible = false;
 
@@ -113,7 +118,7 @@
 
     async Task open(MouseEventArgs arg)
     {
-        Agents = (await _docService.GetAgentsQueryAsync(Id)).Agents;
+        await UpdateAgents();
 
         this.drawerVisible = true;
     }
@@ -135,6 +140,11 @@
         }
     }
 
+    private async Task UpdateAgents()
+    {
+        Agents = (await _docService.GetAgentsQueryAsync(Id)).Agents;
+    }
+
     private async Task HandleOk(MouseEventArgs e)
     {
         _modalText = "Ожидаем подтверждение транзакции и включение в блок.";
@@ -145,12 +155,14 @@
 
         try
         {
-            var result = await _docService.SignRequestAsync(Id);
+            var result = await _docService.SignRequestAndWaitForReceiptAsync(Id);
         }
         catch(Exception ex)
         {
             Console.WriteLine(ex.Message);
         }
+
+        await UpdateAgents();
 
         modalVisible = false;
         modalConfirmLoading = false;
@@ -164,12 +176,14 @@
 
         try
         {
-            var result = await _docService.RejectRequestAsync(Id);
+            var result = await _docService.RejectRequestAndWaitForReceiptAsync(Id);
         }
         catch(Exception ex)
         {
             Console.WriteLine(ex.Message);
         }
+
+        await UpdateAgents();
 
         modalVisible = false;
         modalConfirmLoading = false;
