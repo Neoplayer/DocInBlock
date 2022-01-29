@@ -147,36 +147,30 @@
 
     private async Task HandleOk(MouseEventArgs e)
     {
-        _modalText = "Ожидаем подтверждение транзакции и включение в блок.";
-        modalConfirmLoading = true;
-        StateHasChanged();
-
-        Console.WriteLine($"Init sign doc: {Id.ToString()} from address: {_ethereumHostProvider.SelectedAccount}");
-
-        try
-        {
-            var result = await _docService.SignRequestAndWaitForReceiptAsync(Id);
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-
-        await UpdateAgents();
-
-        modalVisible = false;
-        modalConfirmLoading = false;
+        await UpdateSignStatus(DocStatus.SIGNED);
     }
 
     private async Task HandleCancel(MouseEventArgs e)
     {        
+        await UpdateSignStatus(DocStatus.REJECTED);
+    }
+
+    private async Task UpdateSignStatus(DocStatus status)
+    {
         _modalText = "Ожидаем подтверждение транзакции и включения в блок.";
         modalConfirmLoading = true;
         StateHasChanged();
 
         try
         {
-            var result = await _docService.RejectRequestAndWaitForReceiptAsync(Id);
+            if(status == DocStatus.SIGNED)
+            {
+                var result = await _docService.SignRequestAndWaitForReceiptAsync(Id);   //  TODO Handle error
+            }
+            else if(status == DocStatus.REJECTED)
+            {
+            var result = await _docService.RejectRequestAndWaitForReceiptAsync(Id);   //  TODO Handle error
+            }
         }
         catch(Exception ex)
         {
@@ -184,6 +178,7 @@
         }
 
         await UpdateAgents();
+        await DocumentsManager.UpdateCollection();
 
         modalVisible = false;
         modalConfirmLoading = false;

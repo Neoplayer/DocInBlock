@@ -134,7 +134,10 @@
 
         await _docService.CreateDocumentRequestAndWaitForReceiptAsync(document, agents);
 
-        DocumentsManager.UpdateCollection();
+        document = new DocumentData();
+        agents = new List<string>();
+
+        await DocumentsManager.UpdateCollection();
 
         _submitLoading = false;
     }
@@ -146,7 +149,7 @@
 
     private async Task AddAgent()
     {
-        if (currentAdress == string.Empty)
+        if (string.IsNullOrEmpty(currentAdress))
         {
             return;
         }

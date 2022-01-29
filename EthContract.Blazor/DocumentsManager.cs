@@ -17,4 +17,10 @@ namespace EthContract.Blazor
             return Task.CompletedTask;
         }
     }
+    public enum DocStatus
+    {
+        IDLE,
+        SIGNED,
+        REJECTED
+    }
 }
