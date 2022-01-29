@@ -1,5 +1,7 @@
 ﻿@using EthContract;
 @using System.Numerics
+@using System.Linq
+@using System.Collections.ObjectModel
 
 @inject IDocService _docService;
 
@@ -11,16 +13,20 @@
     </div>
     @if (_hasLoaded)
     {
-        <div class="card" style="padding: 15px">
+        <AntList Grid="grid" DataSource="@docsResult">
+            <ListItem >
+                <DocCard Id="@context"/>
+            </ListItem>
+        </AntList>
+@*        <div class="card" style="padding: 15px">
             <Space Direction="DirectionVHType.Vertical">
             @foreach (var doc in docsResult)
             {
                 <SpaceItem>
-                    <DocCard Id="@doc"/>
                 </SpaceItem>
             }
             </Space>
-        </div>
+        </div>*@
     }
     else
     {
@@ -34,12 +40,36 @@
     public string Address { get; set; }
 
     private bool _hasLoaded = false;
-    private List<BigInteger> docsResult;
+    private List<BigInteger> docsResult = new List<BigInteger>();
 
     protected override async Task OnInitializedAsync()
     {
+        await UpdateDocumentsList();
+
+        DocumentsManager.OnNewDoc += async () =>
+        {
+            await UpdateDocumentsList();
+            StateHasChanged();
+        };
+    }
+
+    protected async Task UpdateDocumentsList()
+    {
+        _hasLoaded = false;
+
         docsResult = await _docService.GetUserDocsQueryAsync(Address);
-        
+
         _hasLoaded = true;
     }
+
+    private ListGridType grid = new()
+    {
+        Gutter = 16,
+        Xs = 1,
+        Sm = 2,
+        Md = 4,
+        Lg = 4,
+        Xl = 6,
+        Xxl = 3,
+    };
 }

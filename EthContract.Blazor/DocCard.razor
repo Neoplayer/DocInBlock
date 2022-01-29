@@ -1,6 +1,10 @@
 ﻿@using System.Numerics
+@using Microsoft.AspNetCore.Components.Web
+@using Nethereum.UI
 
 @inject IDocService _docService;
+@inject IEthereumHostProvider _ethereumHostProvider;
+@inject MessageService _message
 
 <div class="container">
     @if (_hasLoaded)
@@ -9,8 +13,69 @@
             <Body>
                 <p>Event Organizer: @docData.EventOrganizer</p>
                 <p>Type: @docData.Type</p>
+                <Button Type="@ButtonType.Link" OnClick="(e)=>open(e)">Open Details</Button>
             </Body>
         </Card>
+
+
+        <Drawer Width="640" Closable="true" Visible="@drawerVisible" Title='("User Profile")' OnClose="_=>close()">
+            <Divider Orientation="left">Content</Divider>
+
+            <Paragraph>Тип мероприятия: <Text Strong>@docData.Type</Text></Paragraph>
+            <Paragraph>Формат программы: <Text Strong>@docData.Format</Text></Paragraph>
+            <Paragraph>Страна проведения: <Text Strong>@docData.Country</Text></Paragraph>
+            <Paragraph>Город проведения: <Text Strong>@docData.City</Text></Paragraph>
+            <Paragraph>Даты проведения: <Text Strong>@docData.RangeDates[0].ToString() - @docData.RangeDates[1].ToString()</Text></Paragraph>
+            <Paragraph>Количество дней: <Text Strong>@docData.Days</Text></Paragraph>
+            <Paragraph>Количество часов: <Text Strong>@docData.Hours</Text></Paragraph>
+            <Paragraph>Организатор программы: <Text Strong>@docData.EventOrganizer</Text></Paragraph>
+            <Paragraph>Примечания: <Text Strong>@docData.Notes</Text></Paragraph>
+
+            <Divider Orientation="left">Agents</Divider>
+
+            <AntList Bordered DataSource="@Agents" Size="small">
+                <ChildContent Context="item">
+                    <ListItem>
+                        <Space Style="margin: 0 0 5 0">
+                            <Split>
+                                <Divider Type="DirectionVHType.Vertical" />
+                            </Split>
+                            <ChildContent>
+                                <SpaceItem>
+                                    <Text Strong>@item.Address</Text>
+                                </SpaceItem>
+
+                                <SpaceItem>
+                                    @if(item.Status == 0)
+                                    {
+                                        <Tag PresetColor="@PresetColor.Blue" OnClick="@(() => OpenSignModal(item.Address))">Idle</Tag>
+                                    }
+                                    else if(item.Status == 1)
+                                    {
+                                        <Tag PresetColor="@PresetColor.Green">Signed</Tag>
+                                    }
+                                    else if(item.Status == 2)
+                                    {
+                                        <Tag PresetColor="@PresetColor.Red">Rejected</Tag>
+                                    }
+                                </SpaceItem>
+                            </ChildContent>
+                        </Space>
+                    </ListItem>
+                </ChildContent>
+            </AntList>
+        </Drawer>  
+
+        <Modal Title="@("Подписать?")"
+               Visible="@modalVisible"
+               OnOk="@HandleOk"
+               OnCancel="@HandleCancel"
+               ConfirmLoading="@modalConfirmLoading"
+               OkText="@_okText"
+               CancelText="@_cancelText"
+               CancelButtonProps="new AntDesign.ButtonProps(){ Danger = true }">
+                <p>@_modalText</p>
+        </Modal>
     }
     else
     {
@@ -23,8 +88,19 @@
     [Parameter]
     public BigInteger Id { get; set; }
 
+
+    bool drawerVisible = false;
+
+    string _okText = "Accept";
+    string _cancelText = "Reject";
+    string _modalText = "Подписать договор?\nБудьте внимательны. После подписания изменить результат будет не возможно!";
+    bool modalVisible = false;
+    bool modalConfirmLoading = false;
+
     private bool _hasLoaded = false;
     private DocumentData docData;
+
+    private List<Agent> Agents = new List<Agent>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -33,5 +109,74 @@
         docData = result.Data;
 
         _hasLoaded = true;
+    }
+
+    async Task open(MouseEventArgs arg)
+    {
+        Agents = (await _docService.GetAgentsQueryAsync(Id)).Agents;
+
+        this.drawerVisible = true;
+    }
+
+    void close()
+    {
+        this.drawerVisible = false;
+    }
+
+    private async Task OpenSignModal(string address)
+    {
+        if(address.ToLower() == _ethereumHostProvider.SelectedAccount.ToLower())
+        {
+            modalVisible = true;
+        }
+        else
+        {
+            await Warning();
+        }
+    }
+
+    private async Task HandleOk(MouseEventArgs e)
+    {
+        _modalText = "Ожидаем подтверждение транзакции и включение в блок.";
+        modalConfirmLoading = true;
+        StateHasChanged();
+
+        Console.WriteLine($"Init sign doc: {Id.ToString()} from address: {_ethereumHostProvider.SelectedAccount}");
+
+        try
+        {
+            var result = await _docService.SignRequestAsync(Id);
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        modalVisible = false;
+        modalConfirmLoading = false;
+    }
+
+    private async Task HandleCancel(MouseEventArgs e)
+    {        
+        _modalText = "Ожидаем подтверждение транзакции и включения в блок.";
+        modalConfirmLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var result = await _docService.RejectRequestAsync(Id);
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        modalVisible = false;
+        modalConfirmLoading = false;
+    }
+
+    private async Task Warning()
+    {
+        await _message.Warning($"Вы не можете подписать от лица другого человека. Ваш адрес: {_ethereumHostProvider.SelectedAccount}");
     }
 }

@@ -60,30 +60,30 @@ namespace EthContract
 
         public Task<string> CreateDocumentRequestAsync(CreateDocumentFunction createDocumentFunction)
         {
-            return ContractHandler.SendRequestAsync(createDocumentFunction);
+             return ContractHandler.SendRequestAsync(createDocumentFunction);
         }
 
         public Task<TransactionReceipt> CreateDocumentRequestAndWaitForReceiptAsync(CreateDocumentFunction createDocumentFunction, CancellationTokenSource cancellationToken = null)
         {
-            return ContractHandler.SendRequestAndWaitForReceiptAsync(createDocumentFunction, cancellationToken);
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(createDocumentFunction, cancellationToken);
         }
 
         public Task<string> CreateDocumentRequestAsync(DocumentData data, List<string> addreses)
         {
             var createDocumentFunction = new CreateDocumentFunction();
-            createDocumentFunction.Data = data;
-            createDocumentFunction.Addreses = addreses;
-
-            return ContractHandler.SendRequestAsync(createDocumentFunction);
+                createDocumentFunction.Data = data;
+                createDocumentFunction.Addreses = addreses;
+            
+             return ContractHandler.SendRequestAsync(createDocumentFunction);
         }
 
         public Task<TransactionReceipt> CreateDocumentRequestAndWaitForReceiptAsync(DocumentData data, List<string> addreses, CancellationTokenSource cancellationToken = null)
         {
             var createDocumentFunction = new CreateDocumentFunction();
-            createDocumentFunction.Data = data;
-            createDocumentFunction.Addreses = addreses;
-
-            return ContractHandler.SendRequestAndWaitForReceiptAsync(createDocumentFunction, cancellationToken);
+                createDocumentFunction.Data = data;
+                createDocumentFunction.Addreses = addreses;
+            
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(createDocumentFunction, cancellationToken);
         }
 
         public Task<DocumentsOutputDTO> DocumentsQueryAsync(DocumentsFunction documentsFunction, BlockParameter blockParameter = null)
@@ -94,8 +94,8 @@ namespace EthContract
         public Task<DocumentsOutputDTO> DocumentsQueryAsync(BigInteger returnValue1, BlockParameter blockParameter = null)
         {
             var documentsFunction = new DocumentsFunction();
-            documentsFunction.ReturnValue1 = returnValue1;
-
+                documentsFunction.ReturnValue1 = returnValue1;
+            
             return ContractHandler.QueryDeserializingToObjectAsync<DocumentsFunction, DocumentsOutputDTO>(documentsFunction, blockParameter);
         }
 
@@ -107,8 +107,8 @@ namespace EthContract
         public Task<GetAgentsOutputDTO> GetAgentsQueryAsync(BigInteger document, BlockParameter blockParameter = null)
         {
             var getAgentsFunction = new GetAgentsFunction();
-            getAgentsFunction.Document = document;
-
+                getAgentsFunction.Document = document;
+            
             return ContractHandler.QueryDeserializingToObjectAsync<GetAgentsFunction, GetAgentsOutputDTO>(getAgentsFunction, blockParameter);
         }
 
@@ -117,65 +117,78 @@ namespace EthContract
             return ContractHandler.QueryAsync<GetUserDocsFunction, List<BigInteger>>(getUserDocsFunction, blockParameter);
         }
 
-
+        
         public Task<List<BigInteger>> GetUserDocsQueryAsync(string userAddress, BlockParameter blockParameter = null)
         {
             var getUserDocsFunction = new GetUserDocsFunction();
-            getUserDocsFunction.UserAddress = userAddress;
-
+                getUserDocsFunction.UserAddress = userAddress;
+            
             return ContractHandler.QueryAsync<GetUserDocsFunction, List<BigInteger>>(getUserDocsFunction, blockParameter);
+        }
+
+        public Task<GetUserDocsToSignOutputDTO> GetUserDocsToSignQueryAsync(GetUserDocsToSignFunction getUserDocsToSignFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryDeserializingToObjectAsync<GetUserDocsToSignFunction, GetUserDocsToSignOutputDTO>(getUserDocsToSignFunction, blockParameter);
+        }
+
+        public Task<GetUserDocsToSignOutputDTO> GetUserDocsToSignQueryAsync(string userAddress, BlockParameter blockParameter = null)
+        {
+            var getUserDocsToSignFunction = new GetUserDocsToSignFunction();
+                getUserDocsToSignFunction.UserAddress = userAddress;
+            
+            return ContractHandler.QueryDeserializingToObjectAsync<GetUserDocsToSignFunction, GetUserDocsToSignOutputDTO>(getUserDocsToSignFunction, blockParameter);
         }
 
         public Task<string> RejectRequestAsync(RejectFunction rejectFunction)
         {
-            return ContractHandler.SendRequestAsync(rejectFunction);
+             return ContractHandler.SendRequestAsync(rejectFunction);
         }
 
         public Task<TransactionReceipt> RejectRequestAndWaitForReceiptAsync(RejectFunction rejectFunction, CancellationTokenSource cancellationToken = null)
         {
-            return ContractHandler.SendRequestAndWaitForReceiptAsync(rejectFunction, cancellationToken);
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(rejectFunction, cancellationToken);
         }
 
         public Task<string> RejectRequestAsync(BigInteger document)
         {
             var rejectFunction = new RejectFunction();
-            rejectFunction.Document = document;
-
-            return ContractHandler.SendRequestAsync(rejectFunction);
+                rejectFunction.Document = document;
+            
+             return ContractHandler.SendRequestAsync(rejectFunction);
         }
 
         public Task<TransactionReceipt> RejectRequestAndWaitForReceiptAsync(BigInteger document, CancellationTokenSource cancellationToken = null)
         {
             var rejectFunction = new RejectFunction();
-            rejectFunction.Document = document;
-
-            return ContractHandler.SendRequestAndWaitForReceiptAsync(rejectFunction, cancellationToken);
+                rejectFunction.Document = document;
+            
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(rejectFunction, cancellationToken);
         }
 
         public Task<string> SignRequestAsync(SignFunction signFunction)
         {
-            return ContractHandler.SendRequestAsync(signFunction);
+             return ContractHandler.SendRequestAsync(signFunction);
         }
 
         public Task<TransactionReceipt> SignRequestAndWaitForReceiptAsync(SignFunction signFunction, CancellationTokenSource cancellationToken = null)
         {
-            return ContractHandler.SendRequestAndWaitForReceiptAsync(signFunction, cancellationToken);
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(signFunction, cancellationToken);
         }
 
         public Task<string> SignRequestAsync(BigInteger document)
         {
             var signFunction = new SignFunction();
-            signFunction.Document = document;
-
-            return ContractHandler.SendRequestAsync(signFunction);
+                signFunction.Document = document;
+            
+             return ContractHandler.SendRequestAsync(signFunction);
         }
 
         public Task<TransactionReceipt> SignRequestAndWaitForReceiptAsync(BigInteger document, CancellationTokenSource cancellationToken = null)
         {
             var signFunction = new SignFunction();
-            signFunction.Document = document;
-
-            return ContractHandler.SendRequestAndWaitForReceiptAsync(signFunction, cancellationToken);
+                signFunction.Document = document;
+            
+             return ContractHandler.SendRequestAndWaitForReceiptAsync(signFunction, cancellationToken);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿@using System.Numerics
+@using System.Linq
 @using System.Text.Json;
 @using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
 
 @inject IDocService _docService;
 
@@ -39,19 +41,19 @@
             </FormItem>
 
             <FormItem Label="Место проведения">
-                <Cascader @bind-Value="@context.City" Options="districts" />
+                <Cascader @bind-Value="@context.Region" Options="districts" />
             </FormItem>
 
-            <FormItem Label="RangePicker">
-                <RangePicker @bind-Value="@context.RangePicker" />
+            <FormItem Label="Даты проведения">
+                <RangePicker @bind-Value="@context.RangeDates" />
             </FormItem>
 
             <FormItem Label="Количество дней">
-                <AntDesign.InputNumber @bind-Value="@context.Days" />
+                <AntDesign.InputNumber @bind-Value="@context.DaysInt" Min="0" Max="200"/>
             </FormItem>
 
             <FormItem Label="Количество часов">
-                <AntDesign.InputNumber @bind-Value="@context.Hours" />
+                <AntDesign.InputNumber @bind-Value="@context.HoursInt" Min="0" Max="200"/>
             </FormItem>
 
             <FormItem Label="Организатор программы">
@@ -62,9 +64,29 @@
                 <TextArea @bind-Value="@context.Notes" />
             </FormItem>
 
+            <FormItem WrapperColSpan="24">
+            <Divider Orientation="left">Agents</Divider>
+
+            @if(agents.Any())
+            {
+                <AntList Bordered DataSource="@agents" Size="small">
+                    <ChildContent Context="item">
+                        <ListItem>
+                            @item
+                            <Button Danger Type="@ButtonType.Primary" Icon="@IconType.Outline.Close" OnClick="@(e => RemoveAgent(item))"/>
+                        </ListItem>
+                    </ChildContent>
+                </AntList>
+            }
+
+            <Search @ref=@_input Placeholder="Agent address" AllowClear="@true" Size="@InputSize.Large" @bind-Value="@currentAdress" EnterButton="@("Add")" OnSearch="@AddAgent"/>
+            </FormItem>
+
             <FormItem WrapperColOffset="8" WrapperColSpan="16">
-                <Button HtmlType="submit">
-                    Submit
+                <Button Type="@ButtonType.Primary"
+                     Loading="_submitLoading"
+                     HtmlType="submit">
+                    Создать
                 </Button>
             </FormItem>
         </Form>
@@ -77,19 +99,44 @@
 
 
 @code {
+    AntDesign.Search _input;	
+    private string currentAdress;
+
+    private bool _submitLoading;
+
     private bool _hasLoaded = false;
-    private DocumentData document;
+
+    private DocumentData document = new DocumentData();
+    private List<string> agents = new List<string>();
+
+    private List<CascaderNode> districts;
 
     protected override async Task OnInitializedAsync()
     {
-        //docsResult = await _docService.GetUserDocsQueryAsync(Address);
-        
-        _hasLoaded = true;
-    }
+        districts = RegionsManager.Regions.Select(x => new CascaderNode()
+            {
+                Value = x.Id.ToString(),
+                Label = x.Label,
+                Children = x.Childs.Select(y => new CascaderNode()
+                {
+                    Value = x.Id.ToString() + y.Id.ToString(),
+                    Label = y.Label
+                })
+            }).ToList();
 
-    private void OnFinish(EditContext editContext)
+        _hasLoaded = true;
+    }   
+
+    private async Task OnFinish(EditContext editContext)
     {
-        Console.WriteLine($"Success:{JsonSerializer.Serialize(document)}");
+        _submitLoading = true;
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(document)}");
+
+        await _docService.CreateDocumentRequestAndWaitForReceiptAsync(document, agents);
+
+        DocumentsManager.UpdateCollection();
+
+        _submitLoading = false;
     }
 
     private void OnFinishFailed(EditContext editContext)
@@ -97,27 +144,21 @@
         Console.WriteLine($"Failed:{JsonSerializer.Serialize(document)}");
     }
 
-    private List<CascaderNode> districts = new List<CascaderNode>
+    private async Task AddAgent()
     {
-        new CascaderNode()
+        if (currentAdress == string.Empty)
         {
-            Value = "1",
-            Label = "Россия",
-            Children = new []
-            {
-                new CascaderNode {Value = "11", Label = "Санкт-Петербург"},
-                new CascaderNode {Value = "12", Label = "Москва"},
-                new CascaderNode {Value = "12", Label = "Новосибирск"},
-            }
-        },
-        new CascaderNode()
-        {
-            Value = "2",
-            Label = "Белорусь",
-            Children = new []
-            {
-                new CascaderNode {Value = "21", Label = "Минск"},
-            }
+            return;
         }
-    };
+
+        agents.Add(currentAdress);
+        await _input.Focus(FocusBehavior.FocusAndClear, false);
+        StateHasChanged();
+    }
+
+    private void RemoveAgent(string address)
+    {
+        agents.Remove(address);
+        StateHasChanged();
+    }
 }

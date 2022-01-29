@@ -12,25 +12,13 @@
 @if (EthereumAvailable == true && !string.IsNullOrEmpty(SelectedAccount))
 {
     <Row>
-        <GridCol Span="12">
-            <DocsList Address="@SelectedAccount"/>
-        </GridCol>
-        <GridCol Span="12">
+        <GridCol Span="8">
             <CreateDocForm />
         </GridCol>
+        <GridCol Span="16">
+            <DocsList Address="@SelectedAccount"/>
+        </GridCol>
     </Row>
-
-@*    <div class="card m-1 collapsed">
-        <div class="card-body">
-            <div class="row">
-                <label class="col-sm-3 col-form-label-lg">Create Document Test:</label>
-                <div class="col-sm-6">
-                    <button @onclick="@AddDoc">Create</button>
-                    <div>@AuthenticatedAccount</div>
-                </div>
-            </div>
-        </div>
-    </div>*@
 }
 else
 {
@@ -54,8 +42,6 @@ else
         EthereumAvailable = await _ethereumHostProvider.CheckProviderAvailabilityAsync();
     }
 
-    
-
     private async Task HostProvider_SelectedAccountChanged(string account)
     {
         SelectedAccount = account;
@@ -70,23 +56,7 @@ else
         BlockHash = block.BlockHash;
     }
 
-    protected async Task AddDoc()
-    {
-        var res = await service.CreateDocumentRequestAsync(new DocumentData()
-            {
-                Name = "Name",
-                Format = "Standart",
-                Type = "Document",
-                EventOrganizer = "ITMO",
-                City = "City",
-                Country = "C",
-                DateEnd = 1,
-                DateStart = 2,
-                Days = 3,
-                Hours = 4,
-                Notes = "Nothing"
-            }, new List<string>());
-    }
+
 
     protected async Task AddDoc(DocumentData data)
     {
@@ -112,12 +82,5 @@ else
 
         AuthenticatedAccount = await _nethereumAuthenticator.RequestNewChallengeSignatureAndRecoverAccountAsync();
 
-    }
-
-    private DocumentData Data = new();
-
-    private async void HandleValidSubmit()
-    {
-        await AddDoc(Data);
     }
 }
