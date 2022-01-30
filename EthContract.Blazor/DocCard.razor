@@ -10,11 +10,13 @@
     @if (_hasLoaded)
     {
         <Card Bordered="true" Title=@docData.Name Style="width: 300px"> 
-            <Body>
+            <Extra>
                 @if(IsIdle)
                 {
                     <Tag Color="processing">Idle</Tag>
                 }
+            </Extra>
+            <Body>
                 <p>Организатор: @docData.EventOrganizer</p>
                 <p>Тип: @docData.Type</p>
                 <Button Type="@ButtonType.Link" OnClick="(e)=>open(e)">Детали</Button>
