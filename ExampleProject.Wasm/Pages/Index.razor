@@ -3,6 +3,7 @@
 @using Nethereum.Erc20.Blazor;
 @using Nethereum.Hex.HexTypes;
 @using EthContract.Blazor;
+@using Newtonsoft.Json
 
 @inject IJSRuntime jsRuntime;
 @inject IEthereumHostProvider _ethereumHostProvider;
@@ -19,6 +20,14 @@
             <DocsList Address="@SelectedAccount"/>
         </GridCol>
     </Row>
+    <Upload Action="https://api.web3.storage/upload"
+            Headers="@Headers"
+            Name="file"
+            OnSingleCompleted="OnSingleCompleted">
+        <Button Icon="upload">
+            <span>Click to Upload</span>
+        </Button>
+    </Upload>
 }
 else
 {
@@ -35,6 +44,19 @@ else
     string TransactionHash { get; set; }
     string ErrorTransferMessage { get; set; }
     protected string AuthenticatedAccount { get; set; }
+
+    private static Dictionary<string, string> Headers = new Dictionary<string, string>
+    {
+        { "Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDg4NEFFNkEyMjYyNEIyMjI4NTZiQWREZDc5Q2U2Y0NCRDlDODBlNUQiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NDM2MzI2MzIyOTMsIm5hbWUiOiJEb2NUb0Jsb2NrIn0.37-S7b1KsVOy901eluSvcPC4_wJhAZxnlCpK6gH4edw" }
+    };
+    void OnSingleCompleted(UploadInfo fileinfo)
+    {
+        if (fileinfo.File.State == UploadState.Success)
+        {
+            var result = fileinfo.File.GetResponse<object>();
+            Console.WriteLine(JsonConvert.SerializeObject(result));
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
